@@ -1,0 +1,10 @@
+[{
+  "modid": "dosmike_helpmates",
+  "name": "HelpMates",
+  "description": "Use mobs instead of pipes, they save space",
+  "version": "0.2",
+  "url": "https://github.com/DosMike/HelpMates",
+  "authorList": [ "DosMike" ],
+  "requiredMods": [ "spongeapi", "dosmike_toolbbox" ],
+  "dependencies": [ "spongeapi", "dosmike_toolbbox" ]
+}]

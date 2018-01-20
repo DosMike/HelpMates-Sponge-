@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_jar" name="Sponge Plugin">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+	<property name="dir.buildfile" value="${basedir}" />
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.server" value="G:/Sonstige/VanillaSponge/server"/>
+    <property name="dir.gpg" value="G:/Sonstige/VanillaSponge/GnuPG"/>
+    
+    <basename property="my.project.name" file="${basedir}" />
+    
+    <target name="create_jar">
+        <jar destfile="${dir.server}/mods/${my.project.name}.jar" filesetmanifest="mergewithoutmain">
+            <fileset dir="${dir.buildfile}/bin"/>
+        </jar>
+    </target>
+    <target name="run_server">
+    	<exec dir="${dir.server}" executable="cmd">
+    		<arg line="/c start cmd /c startServer.bat"/>
+    	</exec>
+    </target>
+    <target name="build_and_run" depends="create_jar">
+    	<antcall target="run_server"/>
+    </target>
+    <target name="release_build" depends="create_jar">
+    	<exec dir="${dir.gpg}" executable="cmd">
+    		<arg line="/c start cmd /c gpg2 --output ${dir.buildfile}/${my.project.name}.jar.sig --detach-sig ${dir.server}/mods/${my.project.name}.jar"/>
+    	</exec>
+    </target>
+</project>
