@@ -3,7 +3,7 @@ Little Helper Robots
 
 Scriptable helpers for your Server - Who needs pipes anyways :)
 
-# This Plugin requires [https://github.com/DosMike/MikesToolBox-Sponge-](MikesToolBox)
+# This Plugin requires [MikesToolBox](https://github.com/DosMike/MikesToolBox-Sponge-)
 
 ## Crafting
 
@@ -25,7 +25,7 @@ v#v   | # Armor Stand (1)
 ```
 +h+   | + Spiderweb (4)
 c#l   | h Leather Helmet (1), c Leather Chestplate (1), l Leather Leggings (1), b Leather Boots (1)
-+b+   | # Robot Core (1)
++b+   | # Helper Core (1)
      HelpMate (1)
 ```
 
@@ -50,8 +50,9 @@ To get a helpmate going write a script in a book and left-click the HelpMate wit
 
 The Programming Language for HelpMates is made of a non-conditional sequence of commands.   
 Here are the available commands:
+
 | Command | Parameter | Description |
-|---|---|---|
+| --- | --- | ---|
 | `charge` | max | Takes `max` amount of redstone from his Inventory and consumes it for fuel
 | `name is at location` | | Saves a `location` with the specified `name` |
 | `goto` | name or location | Let this HelpMate navigate to the location |
@@ -75,7 +76,7 @@ Books containing scripts DO NOT have to be signed, they can still be editable
 ## Permissions
 
 | Permission | Description |
-|---|---|
+| --- | --- |
 | `helpmates.create.base` | Allow spawning helpmates with right-click (not related to crafting) |
 | `helpmate.skript.teleport` | Allow a players HelpMate to execute the script command `TpTo` |
 | `helpmates.cast.entity.MODID.TYPE` | Allow a HelpMate to be casted into the type MODID:TYPE |
@@ -89,7 +90,7 @@ Options:
 ## Commands
 
 | Command | Alias | Description |
-|---|---|---|
+| --- | --- | --- |
 | /hm create | create, give, op, opmate | Create a HelpMate.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000) |
 | /hm delete <Player> | delete | Remove all HelpMates spawned by this player |
 | /hm cast | cast, convert, change, type | Allows to change type with named lapis |
