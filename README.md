@@ -28,6 +28,7 @@ c#l   | h Leather Helmet (1), c Leather Chestplate (1), l Leather Leggings (1), 
 +b+   | # Helper Core (1)
      HelpMate (1)
 ```
+![Fancy Image](https://raw.githubusercontent.com/DosMike/HelpMates-Sponge-/master/hm-crafting.png "Fancy Crafting Image")
 
 You can convert the type of a helpmate by renaming 1 Lapiz into the entity type (e.g. rename it to `minecraft:villager`)   
 Then take the Lapiz and the HelpMate into both hands and use `/hm cast`   
