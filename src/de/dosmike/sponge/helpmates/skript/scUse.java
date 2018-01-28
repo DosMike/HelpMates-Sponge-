@@ -10,6 +10,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 
 import de.dosmike.sponge.helpmates.HelpMates;
 import de.dosmike.sponge.helpmates.Worker;
+import de.dosmike.sponge.helpmates.forgehelper.InventoryTile;
 
 /** this command will try to use a block at a specified location. If it is a carrier the carrier will be used for inventory commands (take put fuel) */
 public class scUse extends scGoto {
@@ -29,8 +30,10 @@ public class scUse extends scGoto {
 					if (te.get() instanceof Carrier) HelpMates.l("  is Carrier");
 					if (te.get() instanceof Inventory) HelpMates.l("  is Inventory");
 				}
-				if (te.isPresent() && te.get() instanceof Carrier) {
-					thisWorker.setOpenCarrier((Carrier)te.get());
+				if (te.isPresent()) {
+					InventoryTile tinv = new InventoryTile(te.get());
+					thisWorker.setOpenCarrier(tinv);
+					HelpMates.l("Successfully wrapped TileEntity: %s", te.get().getClass().getSimpleName());
 				} else
 				if (liveTarget.supports(Keys.OPEN) && !liveTarget.getBlockType().equals(BlockTypes.IRON_DOOR)) {
 					boolean state = liveTarget.get(Keys.OPEN).orElse(false);

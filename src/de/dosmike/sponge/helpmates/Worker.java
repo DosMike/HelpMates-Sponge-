@@ -19,7 +19,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.extra.fluid.FluidStack;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -32,6 +31,7 @@ import org.spongepowered.api.world.World;
 
 import com.google.common.reflect.TypeToken;
 
+import de.dosmike.sponge.helpmates.forgehelper.InventoryTile;
 import de.dosmike.sponge.helpmates.skript.Skript;
 import de.dosmike.sponge.mikestoolbox.living.BoxLiving;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -48,7 +48,7 @@ public class Worker {
 //	List<ItemStack> inventory = new LinkedList<>();
 	Inventory inventory = null;
 	FluidStack fluidInventory;
-	Carrier useWith = null;
+	InventoryTile useWith = null;
 	String error = null;
 	String ownerName = null;
 	UUID ownerID = null;
@@ -247,10 +247,10 @@ public class Worker {
 			}
 		}
 	}
-	public void setOpenCarrier(Carrier te) {
+	public void setOpenCarrier(InventoryTile te) {
 		useWith = te;
 	}
-	public Optional<Carrier> getOpenCarrier() {
+	public Optional<InventoryTile> getOpenCarrier() {
 		return Optional.ofNullable(useWith);
 	}
 	public Inventory getInventory() {
