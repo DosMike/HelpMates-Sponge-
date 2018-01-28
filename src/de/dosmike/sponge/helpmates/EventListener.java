@@ -130,7 +130,7 @@ public class EventListener {
 			
 			if (event instanceof Secondary) {
 				p.get().openInventory(w.get().inventory);
-//				event.setCancelled(true);
+				event.setCancelled(true);
 				return;
 			} else if (event instanceof Primary) {
 				if (useBook(event)) { 
