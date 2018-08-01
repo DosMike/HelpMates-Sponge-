@@ -17,8 +17,8 @@ import org.spongepowered.api.entity.living.Agent;
 import org.spongepowered.api.entity.living.Creature;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.extra.fluid.FluidStack;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -31,7 +31,9 @@ import org.spongepowered.api.world.World;
 
 import com.google.common.reflect.TypeToken;
 
+import de.dosmike.sponge.helpmates.forgehelper.InventoryTile;
 import de.dosmike.sponge.helpmates.skript.Skript;
+import de.dosmike.sponge.mikestoolbox.living.BoxLiving;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
@@ -45,7 +47,8 @@ public class Worker {
 	Skript myscript=null;
 //	List<ItemStack> inventory = new LinkedList<>();
 	Inventory inventory = null;
-	Carrier useWith = null;
+	FluidStack fluidInventory;
+	InventoryTile useWith = null;
 	String error = null;
 	String ownerName = null;
 	UUID ownerID = null;
@@ -155,9 +158,8 @@ public class Worker {
 			Entity e = target.getExtent().createEntity(EntityTypes.SLIME, target.getPosition());
 			e.offer(Keys.AI_ENABLED, false);
 			e.offer(Keys.IS_SILENT, true);
-//			e.offer(Keys.INVISIBLE, true);
+			e.offer(Keys.INVULNERABLE, true);
 			e.offer(Keys.VANISH, true);
-//			e.offer(Keys.VANISH_IGNORES_COLLISION, true); //has not to be visible for the player
 			e.offer(Keys.SLIME_SIZE, 0); //smales size acording to wiki
 			if (!target.getExtent().spawnEntity(e)) {
 //				e.remove();
@@ -168,8 +170,11 @@ public class Worker {
 			currentMob.offer(Keys.AI_ENABLED, true); //start walking
 			
 			//works better for peacefull mobs
-//			currentMob.offer(Keys.WALKING_SPEED, 0.1); //only supported by players?
-			AttackLivingAITask task = AttackLivingAITask.builder().longMemory().speed(0.5*speedMod).build(currentMob);
+			//div the move speed by move speed will result in only out base speed being left over
+			Double speedFix = BoxLiving.getMovementSpeed(currentMob).orElse(0.7);
+			HelpMates.l("Attributes.generic.movementSpeed: %f", speedFix);
+			speedFix = 0.20 / speedFix; //the base speed i want mobs to move with
+			AttackLivingAITask task = AttackLivingAITask.builder().longMemory().speed(speedFix*speedMod).build(currentMob);
 			Optional<Goal<Agent>> goal = currentMob.getGoal(GoalTypes.TARGET);
 			if (goal.isPresent()) {
 				goal.get().clear(); //remove other goals, you will do as we command
@@ -242,10 +247,10 @@ public class Worker {
 			}
 		}
 	}
-	public void setOpenCarrier(Carrier te) {
+	public void setOpenCarrier(InventoryTile te) {
 		useWith = te;
 	}
-	public Optional<Carrier> getOpenCarrier() {
+	public Optional<InventoryTile> getOpenCarrier() {
 		return Optional.ofNullable(useWith);
 	}
 	public Inventory getInventory() {
