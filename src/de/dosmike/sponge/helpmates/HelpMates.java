@@ -89,7 +89,9 @@ public class HelpMates {
 		List<Worker> result = new LinkedList<>(); 
 		synchronized(workers) {
 			for (Worker w : workers) {
-				if (w.ownerID.equals(player.getUniqueId())) result.add(w);
+				if ((w.ownerID==null && player==null) ||
+					(w.ownerID!=null && w.ownerID.equals(player.getUniqueId())) )
+					result.add(w);
 			}
 		}
 		return result;
@@ -153,14 +155,15 @@ public class HelpMates {
 						w.setTarget(null);
 						
 						//Drop items
-						Location<World> at = w.getAgent().getLocation().add(new Vector3d(0.0, 1.0, 0.0));
-						Item item = (Item) at.getExtent().createEntity(EntityTypes.ITEM, at.getPosition());
-						item.offer(Keys.REPRESENTED_ITEM, CraftingRegistra.iRobotSpawner((int) w.fuelLevel, w.mobType).createSnapshot());
-						item.setCreator(w.ownerID);
-						at.getExtent().spawnEntity(item);
-						
-						w.dropInventory();
-						
+						if (w.ownerID != null) {
+							Location<World> at = w.getAgent().getLocation().add(new Vector3d(0.0, 1.0, 0.0));
+							Item item = (Item) at.getExtent().createEntity(EntityTypes.ITEM, at.getPosition());
+							item.offer(Keys.REPRESENTED_ITEM, CraftingRegistra.iRobotSpawner((int) w.fuelLevel, w.mobType).createSnapshot());
+							item.setCreator(w.ownerID);
+							at.getExtent().spawnEntity(item);
+							
+							w.dropInventory();
+						}
 						//actually remove
 						if (w.currentMob!=null) {
 							w.currentMob.remove();
@@ -226,7 +229,7 @@ public class HelpMates {
 			
 			try {
 				@SuppressWarnings("unchecked")
-				List<ConfigurationNode> node = (List<ConfigurationNode>) configManager.load().getNode("helpmates").getChildrenList();
+				List<CommentedConfigurationNode> node = (List<CommentedConfigurationNode>) configManager.load().getNode("helpmates").getChildrenList();
 				
 				node.forEach(serialWorker->{
 					try {
@@ -245,7 +248,7 @@ public class HelpMates {
 	
 	public void saveConfigs() {
 		synchronized(workers) {
-			l("Saving %d HelpMates", workers.size());
+//			l("Saving %d HelpMates", workers.size());
 			
 			List<ConfigurationNode> node = new ArrayList<>(workers.size());
 			for (Worker w : workers) {

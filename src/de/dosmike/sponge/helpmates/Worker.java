@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
@@ -17,23 +19,28 @@ import org.spongepowered.api.entity.living.Agent;
 import org.spongepowered.api.entity.living.Creature;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.extra.fluid.FluidStack;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.AABB;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.google.common.reflect.TypeToken;
 
+import de.dosmike.sponge.helpmates.forgehelper.InventoryTile;
 import de.dosmike.sponge.helpmates.skript.Skript;
+import de.dosmike.sponge.mikestoolbox.living.BoxLiving;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
+import javax.swing.text.html.Option;
 
 public class Worker {
 	public static final long MaxFuelLevel = 100_000;
@@ -45,7 +52,8 @@ public class Worker {
 	Skript myscript=null;
 //	List<ItemStack> inventory = new LinkedList<>();
 	Inventory inventory = null;
-	Carrier useWith = null;
+	FluidStack fluidInventory;
+	InventoryTile useWith = null;
 	String error = null;
 	String ownerName = null;
 	UUID ownerID = null;
@@ -53,6 +61,7 @@ public class Worker {
 	EntityType mobType = EntityTypes.HUSK;
 	long fuelLevel = 0;
 	float speedMod = 1f; //for later: maybe implement speed upgrades?
+	boolean adminsPuppy = false;
 	
 	/*public Worker(Location<World> spawn, User owner) {
 		lastKnownPos = spawn;
@@ -73,7 +82,8 @@ public class Worker {
 		lastKnownPos = node.getNode("agent").getNode("lastKnownPosition").getValue(new TypeToken<Location<World>>(){});
 		mobType = node.getNode("agent").getNode("entityType").getValue(TypeToken.of(EntityType.class));
 		ownerName = node.getNode("owner").getNode("name").getString("?");
-		ownerID = node.getNode("owner").getNode("userID").getValue(TypeToken.of(UUID.class));
+		if (!node.getNode("owner").getNode("userID").isVirtual())
+			ownerID = node.getNode("owner").getNode("userID").getValue(TypeToken.of(UUID.class));
 		inventory = Inventory.builder()
 				.of(InventoryArchetypes.DISPENSER)
 				.property("inventorytitle", new InventoryTitle(Text.of(getMobTitle())))
@@ -94,14 +104,39 @@ public class Worker {
 				.property("inventorytitle", new InventoryTitle(Text.of(getMobTitle())))
 				.build(HelpMates.instance);
 	}
+	public Worker(Creature agent, CommandSource owner, boolean adminSignatureFlag) {
+		lastKnownPos = agent.getLocation();
+		lastKnownID = agent.getUniqueId();
+		currentMob = agent;
+		mobType = agent.getType();
+		agent.offer(Keys.IS_SILENT, true);
+        agent.offer(Keys.INVULNERABLE, true);
+		ownerName = owner.getName();
+		ownerID = (owner instanceof Player)?((Player)owner).getUniqueId():null;
+		adminsPuppy = true;
+		setMobTitle();
+		inventory = Inventory.builder()
+				.of(InventoryArchetypes.DISPENSER)
+				.property("inventorytitle", new InventoryTitle(Text.of(getMobTitle())))
+				.build(HelpMates.instance);
+	}
 	
 	public Creature getAgent() {
 		return currentMob;
 	}
+	public int getAgentRadius() {
+		Optional<AABB> bb = currentMob.getBoundingBox();
+		if (bb.isPresent()) return (int)(bb.get().getSize().getX()/2);
+		return 0;
+	}
 	public Optional<User> getOwner() {
+		if (ownerID == null) return Optional.empty();
 		Optional<Player> online = Sponge.getServer().getPlayer(ownerID);
 		if (online.isPresent()) return Optional.of((User)online.get());
 		return HelpMates.userStorage.get(ownerID);
+	}
+	public Optional<Location<World>> getTarget() {
+		return Optional.ofNullable(target);
 	}
 	public void setTarget(Location<World> targetLocation) {
 		despawnHelper();
@@ -111,8 +146,11 @@ public class Worker {
 				targetHelper.remove();
 				targetHelper = null;
 			}
-			if (currentMob != null)
+			if (currentMob != null) {
 				currentMob.setTarget(null);
+				//causes the mob to fall for some odd reason:
+				currentMob.setHeadRotation(new Vector3d(0.0,currentMob.getHeadRotation().getY(),0.0));
+			}
 		} else {
 			setOpenCarrier(null); //close continaer
 			target = targetLocation;
@@ -155,9 +193,8 @@ public class Worker {
 			Entity e = target.getExtent().createEntity(EntityTypes.SLIME, target.getPosition());
 			e.offer(Keys.AI_ENABLED, false);
 			e.offer(Keys.IS_SILENT, true);
-//			e.offer(Keys.INVISIBLE, true);
+			e.offer(Keys.INVULNERABLE, true);
 			e.offer(Keys.VANISH, true);
-//			e.offer(Keys.VANISH_IGNORES_COLLISION, true); //has not to be visible for the player
 			e.offer(Keys.SLIME_SIZE, 0); //smales size acording to wiki
 			if (!target.getExtent().spawnEntity(e)) {
 //				e.remove();
@@ -168,8 +205,11 @@ public class Worker {
 			currentMob.offer(Keys.AI_ENABLED, true); //start walking
 			
 			//works better for peacefull mobs
-//			currentMob.offer(Keys.WALKING_SPEED, 0.1); //only supported by players?
-			AttackLivingAITask task = AttackLivingAITask.builder().longMemory().speed(0.5*speedMod).build(currentMob);
+			//div the move speed by move speed will result in only out base speed being left over
+			Double speedFix = BoxLiving.getMovementSpeed(currentMob).orElse(0.7);
+//			HelpMates.l("Attributes.generic.movementSpeed: %f", speedFix);
+			speedFix = 0.20 / speedFix; //the base speed i want mobs to move with
+			AttackLivingAITask task = AttackLivingAITask.builder().longMemory().speed(speedFix*speedMod).build(currentMob);
 			Optional<Goal<Agent>> goal = currentMob.getGoal(GoalTypes.TARGET);
 			if (goal.isPresent()) {
 				goal.get().clear(); //remove other goals, you will do as we command
@@ -227,8 +267,9 @@ public class Worker {
 					if (myscript.isDone()) {
 						myscript = null;
 						setMobTitle();
-					} else if (fuelLevel > 0) {
-						fuelLevel --;
+					} else if (fuelLevel > 0 || adminsPuppy) {
+						if (!adminsPuppy)
+							fuelLevel --;
 						if (myscript.tick())
 							despawnHelper();
 					} else {
@@ -242,10 +283,10 @@ public class Worker {
 			}
 		}
 	}
-	public void setOpenCarrier(Carrier te) {
+	public void setOpenCarrier(InventoryTile te) {
 		useWith = te;
 	}
-	public Optional<Carrier> getOpenCarrier() {
+	public Optional<InventoryTile> getOpenCarrier() {
 		return Optional.ofNullable(useWith);
 	}
 	public Inventory getInventory() {
@@ -264,6 +305,9 @@ public class Worker {
 				lastKnownPos.getExtent().spawnEntity(item);
 			}
 		}
+	}
+	public boolean isAdminsPuppy() {
+		return adminsPuppy;
 	}
 	
 	/** will reduce the stack size until 0 or max fuel level of 100000 (~25000s / ~7h)
@@ -290,6 +334,9 @@ public class Worker {
 	}
 	public int increaseFuelLevel(ItemStack stack) {
 		return increaseFuelLevel(stack, stack.getQuantity());
+	}
+	public void setFuelLevel(long maxfuellevel2) {
+		fuelLevel = Math.min(maxfuellevel2, MaxFuelLevel);
 	}
 	
 	public void setError(String error) {

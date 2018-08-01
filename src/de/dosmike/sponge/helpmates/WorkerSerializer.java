@@ -29,7 +29,8 @@ public class WorkerSerializer {
 		
 		ConfigurationNode owner = ccn.getNode("owner");
 		owner.getNode("name").setValue(TypeToken.of(String.class), worker.ownerName);
-		owner.getNode("userID").setValue(TypeToken.of(UUID.class), worker.ownerID);
+		if (worker.ownerID != null)
+			owner.getNode("userID").setValue(TypeToken.of(UUID.class), worker.ownerID);
 		
 		CommentedConfigurationNode script = ccn.getNode("script");
 		script.setComment("The content from the last set script if it did not finish. will automaticall execute");

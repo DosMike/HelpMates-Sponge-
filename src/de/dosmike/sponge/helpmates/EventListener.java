@@ -116,7 +116,8 @@ public class EventListener {
 		else sp+="'s";
 		sp+=" Robot: ";
 		
-		if (w.get().ownerID.equals(p.get().getUniqueId())) {
+		if (p.get().hasPermission("helpmates.interact.ignoreowner") ||
+			(w.get().ownerID != null && w.get().ownerID.equals(p.get().getUniqueId())) ) {
 
 			Text status = w.get().getError().isPresent()
 					? Text.of(TextColors.RED, "Error")
@@ -130,7 +131,7 @@ public class EventListener {
 			
 			if (event instanceof Secondary) {
 				p.get().openInventory(w.get().inventory);
-//				event.setCancelled(true);
+				event.setCancelled(true);
 				return;
 			} else if (event instanceof Primary) {
 				if (useBook(event)) { 

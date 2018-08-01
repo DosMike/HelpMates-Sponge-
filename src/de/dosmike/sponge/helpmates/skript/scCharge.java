@@ -23,8 +23,15 @@ public class scCharge implements SkriptCommand {
 	
 	public void execute(boolean first) {
 		if (first) {
-			done = false;
-			consumed = 0;
+			if (thisWorker.isAdminsPuppy()) {
+				consumed = amount;
+				done = true;
+				thisWorker.setFuelLevel(Worker.MaxFuelLevel);
+				return;
+			} else {
+				done = false;
+				consumed = 0;
+			}
 		}
 		int sub = 0;
 		Inventory slots = thisWorker.getInventory().query(QueryOperationTypes.ITEM_TYPE.of(ItemTypes.REDSTONE));
