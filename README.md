@@ -7,27 +7,7 @@ Scriptable helpers for your Server - Who needs pipes anyways :)
 
 ## Crafting
 
-Craft Robots with the following recipes:
-```
- +    | + Comparator (4) 
-+O+   | O Eye of Ender (1)
- +    |
-     Robot Part (3)
-```
-
-```
- o    | o Skeleton Head (1)
-v#v   | # Armor Stand (1)
- v    | v Robot Part (3)
-     Helper Core (1)
-```
-
-```
-+h+   | + Spiderweb (4)
-c#l   | h Leather Helmet (1), c Leather Chestplate (1), l Leather Leggings (1), b Leather Boots (1)
-+b+   | # Helper Core (1)
-     HelpMate (1)
-```
+Craft Robots with the following recipes:  
 ![Fancy Image](https://raw.githubusercontent.com/DosMike/HelpMates-Sponge-/master/hm-crafting.png "Fancy Crafting Image")
 
 You can convert the type of a helpmate by renaming 1 Lapiz into the entity type (e.g. rename it to `minecraft:villager`)   
@@ -64,6 +44,7 @@ Here are the available commands:
 | `wait` | seconds | Wait the specified amount of seconds |
 | `try to` | another command | Don't wait until the command is done, just give it a quick try and move on |
 | `repeat` | - | Start the script again |
+| `idle within R for S` | R as radius, S a maximum idle time | Walk to a random location within R blocks at the same height and wait for up to S secons |
 | `tpto` | name or location | Teleport this HelpMate. Requires the owner to have permission `helpmates.script.teleport` |
 
 In theory `use` would request permission, but at this point no permission plugin is checking fake interactions this way.
@@ -82,8 +63,10 @@ Books containing scripts DO NOT have to be signed, they can still be editable
 | `helpmate.skript.teleport` | Allow a players HelpMate to execute the script command `TpTo` |
 | `helpmates.cast.entity.MODID.TYPE` | Allow a HelpMate to be casted into the type MODID:TYPE |
 | `helpmates.command.give.base` | Allows to cheat HelpMates with `/hm create` |
+| `helpmates.command.spawn.base` | Allows to cheat HelpMates with `/hm spawn` |
 | `helpmates.command.delete.base` | Allows `/hm delete` to delete a players HelpMate |
 | `helpmates.command.cast.base` | Allows casting HelpMates into other types with `/hm cast` |
+| `helpmates.interact.ignoreowner` | Allows interaction with HelpMates you did not create |
 
 Options:
 * `helpmates.option.create.limit` - Maximum amount a player may have at a time
@@ -93,5 +76,6 @@ Options:
 | Command | Alias | Description |
 | --- | --- | --- |
 | /hm create | create, give, op, opmate | Create a HelpMate.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000) |
+| /hm spawn | create, give, op, opmate | Create a Admin HelpMate that does not consume Redstone and does not drop.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000)<br>-at Location to spawn at (for command blocks) |
 | /hm delete <Player> | delete | Remove all HelpMates spawned by this player |
 | /hm cast | cast, convert, change, type | Allows to change type with named lapis |
