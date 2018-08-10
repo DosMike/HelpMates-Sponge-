@@ -76,6 +76,6 @@ Options:
 | Command | Alias | Description |
 | --- | --- | --- |
 | /hm create | create, give, op, opmate | Create a HelpMate.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000) |
-| /hm spawn | create, give, op, opmate | Create a Admin HelpMate that does not consume Redstone and does not drop.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000)<br>-at Location to spawn at (for command blocks) |
+| /hm spawn | | Create a Admin HelpMate that does not consume Redstone and does not drop.<br>-t EntityType will overwrite the entity type,<br>-f Fuel will set the initial fuel (max 100000)<br>-at Location to spawn at (for command blocks) |
 | /hm delete <Player> | delete | Remove all HelpMates spawned by this player |
 | /hm cast | cast, convert, change, type | Allows to change type with named lapis |
