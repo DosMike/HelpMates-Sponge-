@@ -19,6 +19,7 @@ import org.spongepowered.api.world.World;
 import de.dosmike.sponge.helpmates.Worker;
 
 public interface SkriptCommand {
+	/** should be called about every 5 game ticks */
 	public void execute(boolean first);
 	public boolean isDone();
 	

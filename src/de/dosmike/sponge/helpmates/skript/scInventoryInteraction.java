@@ -7,12 +7,13 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
 import de.dosmike.sponge.helpmates.Worker;
+import de.dosmike.sponge.helpmates.forgehelper.InventoryTile;
+import de.dosmike.sponge.helpmates.forgehelper.OreDictAbstraction;
 
 /** This abstract command transfered items from one inventory to another, with a specified item type id or keyword */
 public abstract class scInventoryInteraction extends scItemTransferAction {
@@ -33,7 +34,7 @@ public abstract class scInventoryInteraction extends scItemTransferAction {
 			}
 		
 		isDone = false;
-		Optional<Carrier> carrier = thisWorker.getOpenCarrier();
+		Optional<InventoryTile> carrier = thisWorker.getOpenCarrier();
 		if (!carrier.isPresent()) {
 //			HelpMates.l("Carrier was not opened!");
 			thisWorker.setError("I did not open a container");
@@ -67,12 +68,15 @@ public abstract class scInventoryInteraction extends scItemTransferAction {
 				Optional<ItemStackSnapshot> t = transfer(null, (toWorker?other:thisWorker.getInventory()), (toWorker?thisWorker.getInventory():other), true);
 				if (!t.isPresent()) isDone=true; return;
 			} else {
-				Optional<ItemType> type = Sponge.getRegistry().getType(ItemType.class, thing);
-				if (!type.isPresent()) {
-					thisWorker.setError("I don't know what "+thing+" is supposed to mean");
+				Optional<ItemType> type = null;
+				try {
+					type = OreDictAbstraction.getContainedItemType((toWorker?other:thisWorker.getInventory()), thing);
+				} catch (NoSuchFieldError err) {
+					thisWorker.setError(err.getMessage());
 					return;
 				}
-				if (type.get().equals(ItemTypes.AIR) || type.get().equals(ItemTypes.NONE)) {
+				if (type == null || !type.isPresent()) continue; //maybe something else is available
+				if (type.get().equals(ItemTypes.AIR)) {
 					thisWorker.setError("I can't handle air");
 					return;
 				}

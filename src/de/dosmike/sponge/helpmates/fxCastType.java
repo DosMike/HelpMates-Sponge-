@@ -56,13 +56,16 @@ public class fxCastType implements CustomEffect {
 		if (!living.isPresent()) {
 			((Player)entity).sendMessage(Text.of(TextColors.RED, "Please hold one core and one lapis, with the lapis named after the target mob type (e.g. minecraft:cow)"));
 			valid = false;
-		} else if (((Player)entity).hasPermission("helpmates.cast.entity."+living.get().getId().replaceAll(":", "."))) {
-			((Player)entity).sendMessage(Text.of(TextColors.RED, "Please hold one core and one lapis, with the lapis named after the target mob type (e.g. minecraft:cow)"));
-			valid = false;
 		} else {
-			initial = living.get();
-			if (initial.equals(EntityTypes.PLAYER)) initial = EntityTypes.HUMAN; //you can't manually spawn players, humans are fake players
-			((Player)entity).sendMessage(Text.of(TextStyles.ITALIC, "Please focus while casting!"));
+			String perm = "helpmates.cast.entity."+living.get().getId().replaceAll(":", ".");
+			if (!((Player)entity).hasPermission(perm)) {
+				((Player)entity).sendMessage(Text.of(TextColors.RED, "You need permission "+perm+" for this type of entity"));
+				valid = false;
+			} else {
+				initial = living.get();
+				if (initial.equals(EntityTypes.PLAYER)) initial = EntityTypes.HUMAN; //you can't manually spawn players, humans are fake players
+				((Player)entity).sendMessage(Text.of(TextStyles.ITALIC, "Please focus while casting!"));
+			}
 		}
 	}
 	

@@ -41,7 +41,7 @@ public class scGoto implements SkriptCommand {
 	
 	@Override
 	public boolean isDone() {
-		boolean done = (thisWorker.getAgent().getLocation().getExtent().equals(liveTarget.getExtent()))&&(thisWorker.getAgent().getLocation().getPosition().distanceSquared(liveTarget.getPosition()) <= 4.0);
+		boolean done = (thisWorker.getAgent().getLocation().getExtent().equals(liveTarget.getExtent()))&&(thisWorker.getAgent().getLocation().getPosition().distanceSquared(liveTarget.getPosition()) <= 1.0+thisWorker.getAgentRadius());
 		return done;
 	}
 	

@@ -154,6 +154,10 @@ public class Skript {
 			return Optional.of(new scFarm(forWorker, Arrays.copyOfRange(parts, 1, parts.length)));
 		} else if (parts[0].equalsIgnoreCase("Wait") && parts.length == 2) {
 			return Optional.of(new scWait(forWorker, Integer.parseInt(parts[1])));
+		} else if (parts[0].equalsIgnoreCase("Idle") && parts.length == 5 &&
+				parts[1].equalsIgnoreCase("Within") &&
+				parts[3].equalsIgnoreCase("for")) {
+			return Optional.of(new scIdle(forWorker, Integer.parseInt(parts[2]), Integer.parseInt(parts[4])));
 		} else if (parts[0].equalsIgnoreCase("Try")) {
 			int offset = 4;
 			if (parts.length>2 && parts[1].equalsIgnoreCase("to")) offset += 3;
